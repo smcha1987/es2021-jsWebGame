@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>로또추첨기</title>
+  <style> 
+     /*6개의 공 디자인 */
+    .ball {
+      display: inline-block;
+      border: 1px solid black;
+      border-radius: 20px;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      font-size: 20px;
+      text-align: center;
+      margin-right: 20px;
+    }
+  </style>
+</head>
+
+<body>
+    <div id="result">추첨 결과는? </div> <!-- 6개 로또번호 표시 -->
+    <div id = "bonus">보너스 : </div>    
+</body>
+
+<script>
+    const candidate = Array(45).fill().map((v, i) => i+1);
+    const shuffle = [];
+    while (candidate.length > 0) {
+        const random = Math.floor(Math.random() * candidate.length); // 무작위 인덱스 뽑기
+        const spliceArray = candidate.splice(random, 1); // 뽑은 값은 배열에 들어 있음
+        const value = spliceArray[0]; // 배열에 들어 있는 값을 꺼내어
+        shuffle.push(value); // shuffle 배열에 넣기
+    }
+
+
+    console.log(shuffle);
+    const winBalls = shuffle.slice(0,6).sort((a,b) => a-b ); //  shuffle에 있는 배열 index0 번째부터 6개 뽑아서 오름차순 정렬
+    const bonus = shuffle[6];
+    console.log(winBalls, bonus);
+
+    const $result = document.querySelector('#result');
+    
+
+    const drawBall = (number, $parent) => {      
+        const $ball = document.createElement('div');
+        $ball.className = 'ball'; //javascript 에서는 className를 서줘야 한다.
+        $ball.textContent = number;
+        $parent.appendChild($ball);
+    };
+
+    //[0,1,2,3,4,5] - > [1000, 2000, 3000, 4000, 5000, 6000]
+    for(let i=0; i<6; i++) { // let 대신  var를 쓰면 undefined가 뜬다.
+      setTimeout(() => {
+        drawBall(winBalls[i],$result);
+      },(i+1) * 1000);
+    }
+    
+    const $bouns  = document.querySelector('#bonus');
+    setTimeout (() => {
+      drawBall(bonus,$bouns);
+    },7000);
+
+    
+
+
+
+
+
+</script>
