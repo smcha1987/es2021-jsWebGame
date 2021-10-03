@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>반응속도</title>
+<style>
+  #screen {
+    width: 300px;
+    height: 200px;
+    text-align: center;
+    user-select: none;
+  }
+  #screen.waiting {
+    background-color: aqua;
+  }
+  #screen.ready {
+    background-color: red;
+    color: white;
+  }
+  #screen.now {
+    background-color: greenyellow;
+  }
+</style>
+</head>
+
+<body>
+<div id="screen" class="waiting">클릭해서 시작하세요</div>
+<div id="result"></div>
+
+<script>
+    const $screen = document.querySelector('#screen');
+    const $result = document.querySelector('#result');
+
+    $screen.className; //waiting
+    
+/*
+$screen.classList.add('클래스') //추가 
+$screen.classList.replace('기존클래스','수정클래스') //수정 
+$screen.classList.remove('클래스') //제거
+
+*/
+    let startTime;
+    let endTime;
+    const records = [];
+    let timeoutId
+    $screen.addEventListener('click', (event) => {
+        if (event.target.classList.contains('waiting')){  // contains 는 포함하다 이다. // 파란색일경우 
+            $screen.classList.remove('waiting');
+            $screen.classList.add('ready');
+            $screen.textContent = '초록색이 되면 클릭하세요';            
+
+            timeoutId = setTimeout(function () {
+                startTime = new Date();
+                $screen.classList.remove('ready');
+                $screen.classList.add('now');
+                $screen.textContent = '클릭하세요!';            
+                //첫시간 재기 
+            }, Math.floor(Math.random() * 1000)+ 2000); // 2000 ~ 3000 사이 수  / 2초 ~3초 사이 수
+                // 2000 <= X * 1000 + 2000 < 3000  // math.floor 2000 ~ 2999 자연수
+        } else if (event.target.classList.contains('ready'))  {  // 빨간색일 경우
+            clearTimeout(timeoutId);
+            $screen.classList.remove('ready');
+            $screen.classList.add('waiting');
+            $screen.textContent = '너무 성급하시군요!';
+
+        } else if (event.target.classList.contains('now'))  {   // 초록색일 경우
+                // 끝 시간재기
+                endTime = new Date();
+                const current = endTime - startTime;
+                debugger;
+                records.push(current);
+                
+                /* <reduce>
+                    [1,2,3,4].reduce((a,c)  => (a+c),0)  a는 누적값 , c는 현재값   / a+c는 다음 누적값  / (a+c),0) 여기서 0은 초기값
+                    // a:0, c:1 
+                    // a:1, c:2 
+                    // a:3, c:3
+                    // a:6, c:4  --> return  값은 10 
+                    ===================================================
+                    배열.reduce((누적값, 현재값) => {
+                        return 새로운누적값;
+                    }, 초깃값); 
+                */
+                const average = records.reduce((a,c) => a+c) / records.length; // 평균 구하는코드  {records.reduce((a,c) => a+c)는 1+2+3+4라고 생각하면된다.  }
+                $result.textContent  =`현재 ${current}ms, 평균: ${average}ms`;                
+                
+
+                
+                const topFive = records.sort((p,c) => p - c).slice(0,5); // 배열을 오름차순 정렬하고 0,1,2,3,4 까지 짤라라 
+                topFive.forEach((top, index) => {
+                    $result.append(
+                        document.createElement('br'),
+                        `${index +1}위 : ${top}ms`,
+                    );
+                });
+
+                startTime= null;
+                endTime = null;
+                
+                $screen.classList.remove('now');
+                $screen.classList.add('waiting');
+                $screen.textContent = '클릭해서 시작하세요';
+                // 시간 차이 저장하기
+        }
+    })
+
+
+</script>
